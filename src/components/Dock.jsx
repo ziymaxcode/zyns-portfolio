@@ -3,9 +3,11 @@ import {Tooltip} from "react-tooltip";
 import gsap from "gsap";
 import { dockApps } from "#constants/index.js";
 import {useGSAP} from "@gsap/react";
+import useWindowStore from "#store/Window.js";
 
 
 const Dock = () => {
+    const {openWindow, closeWindow, window }=useWindowStore();
     const dockRef = useRef(null);
     useGSAP(()=>{
         const dock=dockRef.current;
@@ -48,8 +50,20 @@ const Dock = () => {
     },[])
 
 
-    const toggleApp = (id) => {
-        console.log("Opening:", id);
+    const toggleApp = (id) => { // Changed param from 'app' to 'id'
+        // 1. Rename the local variable to 'winState' to avoid clashing with the store's 'window'
+        const winState = window[id];
+
+        if (!winState) return;
+
+        if (winState.isOpen) {
+            closeWindow(id);
+        } else {
+            openWindow(id);
+        }
+
+        // Debugging: Log the specific window state
+        console.log(`Window ${id} state:`, winState);
     };
 
     return (
